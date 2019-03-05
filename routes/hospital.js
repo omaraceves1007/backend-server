@@ -18,7 +18,7 @@ app.get('/', (req, res, next) => {
 
     Hospital.find({})
         .skip(desde)
-        .limit(5)
+        // .limit(5)
         .populate('usuario', 'nombre email')
         .exec((err, hospitales) => {
             if (err) {
@@ -84,6 +84,44 @@ app.put('/:id', mdAutenticacion.verifivaToken, (req, res) => {
 });
 
 // ========================================
+//     	 Obtener Hospital por ID
+// ========================================
+
+app.get('/:id', (req, res) => {
+
+    var id = req.params.id;
+
+    Hospital.findById(id)
+        .populate('usuario', 'nombre img email')
+        .exec((err, hospital) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al buscar hospital',
+                    errors: err
+                });
+            }
+
+            if (!hospital) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'El hospital con id: ' + id + 'no existe',
+                    errors: { message: 'No existe hospital con ese id' }
+                });
+            }
+
+            res.status(200).json({
+                ok: true,
+                hospital: hospital
+            });
+
+        });
+});
+
+
+
+// ========================================
 //     	 Crear Hospital
 // ========================================
 
@@ -117,11 +155,11 @@ app.post('/', mdAutenticacion.verifivaToken, (req, res) => {
 //     	Borrar Hospital 
 // ========================================
 
-app.delete('/:id', (req, res) => {
+app.delete('/:id', mdAutenticacion.verifivaToken, (req, res) => {
 
     var id = req.params.id;
 
-    Hospital.findByIdAndRemove(id, mdAutenticacion.verifivaToken, (err, hospitalBorrado) => {
+    Hospital.findByIdAndRemove(id, (err, hospitalBorrado) => {
 
         if (err) {
             return res.status(500).json({

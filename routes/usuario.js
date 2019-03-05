@@ -22,7 +22,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({}, 'nombre email img role')
+    Usuario.find({}, 'nombre email img role google')
         .skip(desde)
         .limit(5)
         .exec((err, usuarios) => {
@@ -73,7 +73,7 @@ app.get('/', (req, res, next) => {
 //      Actualizar Usuario
 // ========================================
 
-app.put('/:id', mdAutenticacion.verifivaToken, (req, res) => {
+app.put('/:id', [mdAutenticacion.verifivaToken, mdAutenticacion.verificaAdminMismoUsuario], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -118,10 +118,10 @@ app.put('/:id', mdAutenticacion.verifivaToken, (req, res) => {
 });
 
 // ========================================
-//      Crear usuario
+//      Crear usuario  mdAutenticacion.verifivaToken,
 // ========================================
 
-app.post('/', mdAutenticacion.verifivaToken, (req, res) => {
+app.post('/', (req, res) => {
 
     var body = req.body;
 
@@ -157,7 +157,7 @@ app.post('/', mdAutenticacion.verifivaToken, (req, res) => {
 //      Borrar usuario por id
 // ========================================
 
-app.delete('/:id', mdAutenticacion.verifivaToken, (req, res) => {
+app.delete('/:id', [mdAutenticacion.verifivaToken, mdAutenticacion.verificaAdminRole], (req, res) => {
 
     var id = req.params.id;
 
